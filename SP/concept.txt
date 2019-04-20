@@ -1,0 +1,39 @@
+aim: object code generation for the sic-xe program
+
+Instruction Formats:
+---1 byte Format   : opcode<8 bits>
+---2 byte Format   : register1(8 bits)+ register2(8 bits)
+---3 byte Format   : opcode(6 bits)+[n i x b p e](6 bits)+disp(12 bits)
+---4 byte Format   : opcode(6 bits)+[n i x b p e](6 bits)+address(20 bits
+
+Working Registers: A X L B S T F
+
+3 and 4 byte Addressing Modes:
+
+Direct:
+n=0 i=0
+        x=0-->simple SIC Instruction, last 15 bits are the address
+        x=1-->target address=index register + direct address
+n=1 i=1
+        -rest all are 0-->target address=12 bits displacement
+        -e=1-->target address=20 bits address
+        -p=1-->target address=PC relative
+        -b=1-->target address=Base relative
+        -x=1-->target address=index register + direct address
+            e=1-->target address=index register + direct address
+            p=1-->target address=index register + PC relative computation
+            b=1-->target address=index register + Base displacement computation
+
+Indirect:
+n=1 i=0
+        -rest all are 0 |
+        -e=1            |---target address = address
+        -b=1            |       -indexed addressing not supported
+        -p=1            |
+
+Immediate:
+n=0 i=1
+        -rest all are 0 |
+        -e=1            |---target address is the Instruction
+        -b=1            |---computed memory address is the operand
+        -p=1            |   -indexed addressing not supported
