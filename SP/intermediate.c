@@ -21,6 +21,10 @@ int main(){
     int line_number=0;
     int interval=0;
 
+    fgets(line,50,sicxe);
+    fprintf(intermediate_file,"%x    %s",line_number,line);
+      
+
     while (!feof(sicxe)){
         interval=0;
         fgets(line,50,sicxe);
