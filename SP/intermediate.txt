@@ -1,0 +1,16 @@
+0    SUM START 0
+3    FIRST LDX #0
+6         LDA #0
+9         +LDB #TABLE2
+c         BASE TABLE2
+f    LOOP ADD TABLE,X
+12         ADD TABLE2,X
+15         TIX COUNT
+18         JLT LOOP
+1b         +STA TOTAL
+1e         RSUB
+21    COUNT RESW 1
+24    TABLE RESW 2000
+27    TABLE2 RESW 2000
+2a    TOTAL RESW 1
+2d         END FIRST
