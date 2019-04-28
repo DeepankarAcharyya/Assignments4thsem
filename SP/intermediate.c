@@ -14,7 +14,23 @@ int findInterval(char* pointer1,int k){
 
         if(k==1)
             i=6;
-        else i=5;
+        else if (k==0)
+        i=5;
+        else if(k==2){
+            if(strstr(pointer1,"C'")!=NULL){
+                pointer1=strstr(pointer1,"C\'");
+            }
+            else if(strstr(pointer1,"X'")!=NULL){
+                pointer1=strstr(pointer1,"X\'");
+            }
+            j=2;
+            while(pointer1[j]!='\''){
+                address++;
+                j++;
+            }
+            //printf("\nBYTE CASE:%d",address);
+            return address;
+        }
         int size=(sizeof(pointer1)/sizeof(char))+1;
         while (i<=size){
             if(pointer1[i]>='0' && pointer1[i]<='9'){
@@ -77,7 +93,7 @@ int main(){
         }
         else if(strstr(line,"BYTE")!=NULL){
             pointer1=strstr(line,"BYTE");
-            interval=findInterval(pointer1,0);
+            interval=findInterval(pointer1,2);
             printlabel(line,line_number);
         }
         else if(strstr(line,"WORD")!=NULL){
