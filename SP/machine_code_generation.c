@@ -16,34 +16,32 @@ int n/*indirect*/,i/*immediate*/,x/*indexed*/,b/*base relative*/,p/*PC relative*
 int A/*Accumulator*/,X/*Index register*/,L/*Linkage Register*/,B/*Base Register*/,PC/*Program Counter*/;
 
 //address
-int address[32];
+int address[32],address2[20];
 
 //functions
-int binary(int a){
-    int i=0;
+int binary(int a,int b){
+    int i=0,s;
+    if (b==1)
+        s=8;
+    else s=4;
     while(a!=0){
-        opcode_binary[4-i-1]=a%2;
+        opcode_binary[s-i-1]=a%2;
         a=a/2;
         i++;
     }
     return 1;
 }
 
-int convert2Binary(char opcode[]){
+void convert2Binary(char opcode[]){
     int opCode=atoi(opcode);
-    int r,j=4,bin;
+    int r,j=4,bin,i=1;
 
-    r=opCode%10;
     while(r!=0){
-        bin=binary(r);
+        r=opCode%10;
+        bin=binary(r,i);
+        i++;
         opCode=opCode/10;
-        
     }
-
-}
-
-int convert2Binary(int disp){
-
 }
 
 void fillAddress1(int ins_length,int disp){
@@ -59,12 +57,10 @@ void fillAddress1(int ins_length,int disp){
     address[10]=p;
     address[11]=e;
 
-    int disp1=convert2Binary(disp);
-
-    for(index=12;index<ins_length;index++){
-        address[ins_length-index]=disp1%10;
-        disp1=disp1/10;
+    if (ins_length==24){
+        disp=disp%10000;
     }
+    else disp=disp%1000000;
 
     return;
 }
@@ -93,24 +89,8 @@ void scanOpcode(){
         fscanf(opcode_file,"%s %s",opcodes[index_opcode],opcodes[index_opcode+1]);
         index_opcode+=2;
     }
-    //printf("\nOpcode_index=%d",index_opcode);
     fclose(opcode_file);
     return;
-}
-
-int scanSymbolTable(char label2scan[]){
-    FILE* symbol_table_file=fopen("symbol_table.txt","r");
-    char add[10],label[10];
-    while (!feof(symbol_table_file)){
-        fscanf(symbol_table_file,"%s %s",add,label);
-        if(strcmp(label2scan,label)==0){
-            printf("\n %s",add);
-            fclose(symbol_table_file);
-            return 1;
-        }
-    }
-    fclose(symbol_table_file);
-    return 0;
 }
 
 int getOpcode(char mnemonic[]){
@@ -122,6 +102,20 @@ int getOpcode(char mnemonic[]){
         }
         i+=2;
     }
+    return -1;
+}
+
+int scanSymbolTable(char label2scan[]){
+    FILE* symbol_table_file=fopen("symbol_table.txt","r");
+    char add[10],label[10];
+    while (!feof(symbol_table_file)){
+        fscanf(symbol_table_file,"%s %s",add,label);
+        if(strcmp(label2scan,label)==0){
+            fclose(symbol_table_file);
+            return atoi(add);
+        }
+    }
+    fclose(symbol_table_file);
     return -1;
 }
 
@@ -262,7 +256,7 @@ int main(){
             }
         }
     }
-
+    
     _fcloseall();
     return 0;
 }
