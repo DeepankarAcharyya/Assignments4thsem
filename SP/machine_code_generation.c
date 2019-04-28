@@ -7,7 +7,6 @@
 //global variables
 char opcodes[50][10];
 int index_opcode;
-int opcode_binary[8];
 
 //flag bits
 int n/*indirect*/,i/*immediate*/,x/*indexed*/,b/*base relative*/,p/*PC relative*/,e/*extended*/;
@@ -16,55 +15,96 @@ int n/*indirect*/,i/*immediate*/,x/*indexed*/,b/*base relative*/,p/*PC relative*
 int A/*Accumulator*/,X/*Index register*/,L/*Linkage Register*/,B/*Base Register*/,PC/*Program Counter*/;
 
 //address
-int address[32],address2[20];
+int address[11];
+char add_final[8];
 
 //functions
-int binary(int a,int b){
-    int i=0,s;
-    if (b==1)
-        s=8;
-    else s=4;
-    while(a!=0){
-        opcode_binary[s-i-1]=a%2;
-        a=a/2;
-        i++;
+char HexValue[4];
+char convert2Hex(int q){
+    int r,j = 0;
+    while (q!= 0){
+        r = q % 16;          
+    if (r < 10)
+        HexValue[j++] = 48 + r;   
+    else
+        HexValue[j++] = 55 + r;   
+    q= q/ 16;            
     }
-    return 1;
 }
 
-void convert2Binary(char opcode[]){
-    int opCode=atoi(opcode);
-    int r,j=4,bin,i=1;
+int convert2Decimal(char l1){
+    return l1-'A'+10;
+}
 
-    while(r!=0){
-        r=opCode%10;
-        bin=binary(r,i);
-        i++;
-        opCode=opCode/10;
+void binary(int a,int j){
+    int binary[4];
+    int i1=0;
+    while(a!=0){
+        binary[4-i-1]=a%2;
+        a=a/2;
+        i1++;
     }
+    address[j+1]=binary[0];
+    address[j+2]=binary[1];
+}
+
+//yet to be completed
+void fillAddress2(int format){
+    int s=0;
+    if(format==3){
+        
+    }
+    else{
+
+    }
+
+
+
+}
+
+void fillAddress0(char opcode[],int i1){
+    address[i1]=opcode[0];
+    char b=opcode[1];
+    if (b>='0' && b<='9'){
+        binary(b-'0',i1);
+    }
+    else   binary(convert2Decimal(b),i1);
 }
 
 void fillAddress1(int ins_length,int disp){
-    int index=0;
-    while(index<6){
-        address[index]=opcode_binary[index];
-        index++;
-    }
-    address[6]=n;
-    address[7]=i;
-    address[8]=x;
-    address[9]=b;
-    address[10]=p;
-    address[11]=e;
-
+    int i1,format;
+    
     if (ins_length==24){
         disp=disp%10000;
+        i1=5;
+        format=4;
+        address[3]=n;
+        address[4]=i;
+        address[5]=x;
+        address[6]=b;
+        address[7]=p;
+        address[8]=e;
     }
-    else disp=disp%1000000;
+    else if(ins_length==20) {
+        disp=disp%1000000;
+        i=3;
+        format=3;
+        address[5]=n;
+        address[6]=i;
+        address[7]=x;
+        address[8]=b;
+        address[9]=p;
+        address[10]=e;
+        }
 
+    while(disp!=0){
+        address[11-i1-1]=disp%10;
+        disp=disp/10;
+        i1++;
+    }
+    fillAddress2(format);
     return;
 }
-
 
 int isBaseRelative(int target_address){
     int disp=target_address-B;
@@ -256,7 +296,7 @@ int main(){
             }
         }
     }
-    
+
     _fcloseall();
     return 0;
 }
