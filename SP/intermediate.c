@@ -1,4 +1,4 @@
-//for creating the intermediate file--->program file with line numbers
+//for creating the intermediate file--->program file with line numbers+the symbol table
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -63,6 +63,7 @@ void printlabel(char line[],int line_number){
          fclose(symbol_table_file);
 }
 
+//main
 int main(){
     FILE* sicxe=fopen("sicxe.txt","r");
     FILE* intermediate_file=fopen("intermediate.txt","w");
@@ -77,7 +78,9 @@ int main(){
     while (!feof(sicxe)){
         interval=0;
         fgets(line,50,sicxe);
-        if(line[0]=='.'){
+        
+        if(strstr(line,"BASE")!=NULL || line[0]=='.'){
+            fprintf(intermediate_file,"\t%s",line);
             continue;
         }
         else if(strstr(line,"START")!=NULL){
@@ -88,7 +91,7 @@ int main(){
        }
         else if(strstr(line,"END")!=NULL){
             end_address=line_number;
-            fprintf(intermediate_file,"%x    %s",line_number,line);
+            fprintf(intermediate_file,"%x \t %s",line_number,line);
             break;
         }
         else if(strstr(line,"BYTE")!=NULL){
@@ -110,12 +113,15 @@ int main(){
                 interval=findInterval(pointer1,0);
                 printlabel(line,line_number);
         }
-        else if(line[0]!=' ' && line[0]!='.'){
+        else if(strstr(line,"+")!=NULL){
+            interval=4;
+        }
+        else if(line[0]!=' '){
             printlabel(line,line_number);
             interval=3;
         }
-
-        fprintf(intermediate_file,"%x    %s",line_number,line);
+        else interval=3;
+        fprintf(intermediate_file,"%x \t %s",line_number,line);
         line_number+=interval;
     }
 
