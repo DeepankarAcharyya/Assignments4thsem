@@ -3,45 +3,102 @@
 #include<stdlib.h>
 #include<string.h>
 
-int findInterval(char* pointer1){
-        char line_int[5];
-        int i=5,j=0;
-        while (i<(sizeof(pointer1)/sizeof(char))){
-               line_int[j++]=pointer1[i++];
+//global variables
+char prog_name[15];
+int start_address,end_address;
+
+//functions
+int findInterval(char* pointer1,int k){
+        int i,j=0;
+        int address=0;
+
+        if(k==1)
+            i=6;
+        else i=5;
+        int size=(sizeof(pointer1)/sizeof(char))+1;
+        while (i<=size){
+            if(pointer1[i]>='0' && pointer1[i]<='9'){
+                address*=10;
+               address+=pointer1[i]-'0';
+               i++;}
+            else break;
         }
-        return atoi(line_int);
+        //printf("\n%d %s %d",size,pointer1,address);
+        return address;
+}
+
+void getProgramName(char line[]){
+    int i=0;
+    while(line[i]!=' '){
+        prog_name[i]=line[i];
+        i++;
+    }
+}
+
+void printlabel(char line[],int line_number){
+        FILE* symbol_table_file=fopen("symbol_table.txt","a");
+        char label1[10];
+        int i=0,j=0;
+        while (line[i]!=' '){
+            label1[j++]=line[i++];
+        }
+        //printf("\nLabel=%s",label1);
+         fprintf(symbol_table_file,"%x   %s\n",line_number,label1);
+         fclose(symbol_table_file);
 }
 
 int main(){
     FILE* sicxe=fopen("sicxe.txt","r");
     FILE* intermediate_file=fopen("intermediate.txt","w");
-
+    FILE* symbole_table=fopen("symbol_table.txt","w");
+    
     char line[50], line_int[5];
+    char* label1;
     char* pointer1;
     int line_number=0;
     int interval=0;
 
-    fgets(line,50,sicxe);
-    fprintf(intermediate_file,"%x    %s",line_number,line);
-      
-
     while (!feof(sicxe)){
         interval=0;
         fgets(line,50,sicxe);
-
-        if(strstr(line,"BYTE")!=NULL || strstr(line,"WORD")!=NULL){
-            interval=1;
+        if(line[0]=='.'){
+            continue;
+        }
+        else if(strstr(line,"START")!=NULL){
+            getProgramName(line);
+            pointer1=strstr(line,"START");
+            line_number=findInterval(pointer1,1);
+            start_address=line_number;
+       }
+        else if(strstr(line,"END")!=NULL){
+            end_address=line_number;
+            fprintf(intermediate_file,"%x    %s",line_number,line);
+            break;
+        }
+        else if(strstr(line,"BYTE")!=NULL){
+            pointer1=strstr(line,"BYTE");
+            interval=findInterval(pointer1,0);
+            printlabel(line,line_number);
+        }
+        else if(strstr(line,"WORD")!=NULL){
+            interval=3;
+            printlabel(line,line_number);
         }
         else if(strstr(line,"RESB")!=NULL){
                 pointer1=strstr(line,"RESB");
-                interval=findInterval(pointer1);
+                interval=findInterval(pointer1,0);
+                printlabel(line,line_number);
         }
         else if ( strstr(line,"RESW")!=NULL){
                 pointer1=strstr(line,"RESW");
-                interval=findInterval(pointer1);
+                interval=findInterval(pointer1,0);
+                printlabel(line,line_number);
         }
-        else interval=3;
- 
+        else if(line[0]!=' ' && line[0]!='.'){
+            printlabel(line,line_number);
+            interval=3;
+        }
+
         fprintf(intermediate_file,"%x    %s",line_number,line);
         line_number+=interval;
     }
