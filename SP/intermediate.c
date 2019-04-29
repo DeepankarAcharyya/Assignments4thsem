@@ -59,7 +59,7 @@ void printlabel(char line[],int line_number){
             label1[j++]=line[i++];
         }
         //printf("\nLabel=%s",label1);
-         fprintf(symbol_table_file,"%x   %s\n",line_number,label1);
+         fprintf(symbol_table_file,"%x   %s \n",line_number,label1);
          fclose(symbol_table_file);
 }
 
@@ -80,7 +80,7 @@ int main(){
         fgets(line,50,sicxe);
         
         if(strstr(line,"BASE")!=NULL || line[0]=='.'){
-            fprintf(intermediate_file,"\t%s",line);
+            fprintf(intermediate_file,"\t%s\t",line);
             continue;
         }
         else if(strstr(line,"START")!=NULL){
@@ -121,7 +121,7 @@ int main(){
             interval=3;
         }
         else interval=3;
-        fprintf(intermediate_file,"%x \t %s",line_number,line);
+        fprintf(intermediate_file," %x\t%s ",line_number,line);
         line_number+=interval;
     }
 
