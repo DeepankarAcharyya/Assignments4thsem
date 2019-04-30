@@ -3,7 +3,7 @@
   232b	     LDA #0 
   232e	     +LDB #TABLE2 
  	     BASE TABLE2 
-	 2332	LOOP ADD TABLE,X 
+  2332	LOOP ADD TABLE,X 
   2335	     ADD TABLE2,X 
   2338	     TIX COUNT 
   233b	     JLT LOOP 

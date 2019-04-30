@@ -19,21 +19,7 @@ int A,X,L,B,PC;
 char add_final[8];
 
 //functions:
-int isBaseRelative(int target_address){
-    int disp=target_address-B;
-    if(disp>=0 && disp<=4095){
-        return 1;
-    }
-    else return 0;
-}
 
-int isProgramCounterRelative(int target_address){
-    int disp=target_address-PC;
-    if (disp>=-2048 && disp<=2047){
-        return 1;
-    }
-    else return 0;
-}
 
 void scanOpcode(){
     FILE* opcode_file=fopen("opcode.txt","r");
