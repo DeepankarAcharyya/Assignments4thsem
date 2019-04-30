@@ -245,6 +245,7 @@ void main(){
             int add1;
             if(scanSymbolTable(line2)!=-1){
                 add1=scanSymbolTable(line2);
+                //printf("\n%s %x",line2,add1);
             }
             else add1=atoi(line2);
             
@@ -264,7 +265,6 @@ void main(){
             }
 
             else if(e==0 && immediate==0){
-
                 fprintf(machine_code_file, "%.3x", disp % 0x1000);
             }
 
